@@ -21,9 +21,6 @@ namespace CashTransMainService.Controllers
             _kafkaConsumerManager = kafkaConsumerManager;
         }
 
-        /// <summary>
-        /// Tổng hợp lại cuối ngày.
-        /// </summary>
         [HttpPost("start-cash-consumer")]
         public IActionResult StartCashConsumer()
         {

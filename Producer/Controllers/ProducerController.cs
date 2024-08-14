@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 using Confluent.Kafka;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +38,11 @@ public class ProducerController : ControllerBase
         };
         try
         {
+            var idRequest = HttpContext.Connection.RemoteIpAddress.ToString();
+            var messageHeaders = new Headers();
+            messageHeaders.Add(new Confluent.Kafka.Header("Partition", Encoding.UTF8.GetBytes(idRequest)));
+            kafkaMessage.Headers = messageHeaders;  
+            kafkaMessage.Key = idRequest;
             var producerSetting = _appSetting.GetProducerSetting(Constants.ProducerSettingId);
             await _kafkaProducer.ProduceAsync(producerSetting.Topic, kafkaMessage);
             return Ok($"{kafkaMessage.Value}");

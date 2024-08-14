@@ -2,6 +2,8 @@
 using CashTransMainService.Settings;
 using Confluent.Kafka;
 using Manonero.MessageBus.Kafka.Abstractions;
+using System.Collections;
+using System.Text;
 
 namespace CashTransMainService.BackgroundTasks
 {
@@ -19,7 +21,13 @@ namespace CashTransMainService.BackgroundTasks
 
         public void Execute(ConsumeResult<string, string> result)
         {
-            Console.WriteLine(result.Message);
+            if (result.Message.Headers.Any())
+            {
+                var header = result.Message.Headers[0].GetValueBytes();
+                Console.WriteLine(Encoding.UTF8.GetString(header));
+            }
+
+            //Process message right here
         }
     }
 }
