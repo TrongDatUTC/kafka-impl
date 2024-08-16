@@ -10,7 +10,7 @@ using Producer.Entities;
 namespace TestProducer.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("/api/v1/[controller]")]
 public class ProducerController : ControllerBase
 {
     private readonly IProducer<string, string> _kafkaProducer;
@@ -27,7 +27,26 @@ public class ProducerController : ControllerBase
         };
     }
 
-    [HttpGet("Produce")]
+    private static readonly string[] Summaries = new[]
+    {
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+
+
+    [HttpGet]
+    public IEnumerable<WeatherForecast> Get()
+    {
+        var rng = new Random();
+        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        {
+            Date = DateTime.Now.AddDays(index),
+            TemperatureC = rng.Next(-20, 55),
+            Summary = Summaries[rng.Next(Summaries.Length)]
+        })
+        .ToArray();
+    }
+
+    [HttpPost("Produce")]
     public async Task<IActionResult> Produce()
     {
         var msg = new KafkaMessage { Id = Guid.NewGuid(), Name = "Nguyen Trong Dat" };
